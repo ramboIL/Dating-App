@@ -1,38 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  baseUrl = 'http://localhost:5000/api/auth/';
+  baseUrl = 'http://localhost:3000/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
- // login(model: any){
-  //  const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-  //  return this.http.post(this.baseUrl + 'login', model, {headers}).pipe(
-  //    map((response: any) => {
- //       const user = response;
- //       if (user){
-  //        localStorage.setItem('token', user.token);
-  //      }
- //     })
-//    );
-//  }
-  login(model: any){
+  login(model: any) {
     return this.http.post(this.baseUrl + 'login', model).pipe(
       map((response: any) => {
         const user = response;
-        if (user){
+        if (user && user.token) {
           localStorage.setItem('token', user.token);
         }
+        return user;
       })
     );
   }
 
-  register(model: any){
+  register(model: any) {
     return this.http.post(this.baseUrl + 'register', model);
   }
+}
+
+export interface IUser {
+  username: string;
+  password: string;
+  profilePicture: string;
+  images: string[];
+  description?: string;
+  likedUsers: string[];
 }
