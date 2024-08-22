@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -22,16 +22,28 @@ export class AuthService {
     );
   }
 
-  register(model: any) {
-    return this.http.post(this.baseUrl + 'register', model);
+  async register(model: IUser) {
+    return await this.http.post(this.baseUrl + 'register', model).pipe(
+      catchError((error) => {
+        // Handle the error and return an observable with an appropriate error message
+        console.log('Error registering user');
+        return error;
+      })
+    );
   }
 }
 
 export interface IUser {
   username: string;
   password: string;
-  profilePicture: string;
-  images: string[];
-  description?: string;
-  likedUsers: string[];
+  profilePicture?: string;
+  images?: string[];
+  description: string;
+  likedUsers?: string[];
+  gender: Gender;
+}
+
+export enum Gender {
+  Male,
+  Female,
 }

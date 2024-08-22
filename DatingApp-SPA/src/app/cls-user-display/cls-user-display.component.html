@@ -1,0 +1,25 @@
+<div class="user-container">
+  <div class="header">
+    <div class="Profilepic">
+      <img class="profileImg" [src]="userProfileImage" />
+    </div>
+    <div class="title">
+      <h4>{{ user.username }}</h4>
+    </div>
+  </div>
+  <div class="imagescontainer">
+    <div class="imagespacer">
+      <div *ngFor="let img of userImages">
+        <img class="listImgs" [src]="img" />
+      </div>
+    </div>
+  </div>
+  <div class="description">
+    <h5>
+      {{ user.description }}
+    </h5>
+  </div>
+  <div class="actions">
+    <button mat-button (onclick)="clickLike()">LIKE</button>
+  </div>
+</div>

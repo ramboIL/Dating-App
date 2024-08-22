@@ -1,32 +1,53 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { AuthService } from '../_services/auth.service';
+import { AuthService, Gender, IUser } from '../_services/auth.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
-  model: any = {};
+  model: IUser = {
+    username: '',
+    password: '',
+    description: '',
+    gender: Gender.Male,
+  };
 
-  constructor(private authService: AuthService) { }
+  Gender = Gender;
 
-  ngOnInit() {
+  isRegisterSuccess: boolean = false;
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit() {}
+
+  async register() {
+    try {
+      const formData = {
+        username: this.model.username,
+        password: this.model.password,
+        description: this.model.description,
+        gender: this.model.gender,
+      } as IUser;
+
+      (await this.authService.register(formData)).subscribe(
+        () => {
+          console.log('Registration successful');
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+      this.isRegisterSuccess = true;
+    } catch (ex) {
+      this.isRegisterSuccess = false;
+    }
   }
 
-  register(){
-    this.authService.register(this.model).subscribe(() => {
-      console.log('registration successful');
-    }, error => {
-      console.log(error);
-    });
-  }
-
-  cancel(){
+  cancel() {
     this.cancelRegister.emit(false);
     console.log('cancalled');
   }
-
-
 }
