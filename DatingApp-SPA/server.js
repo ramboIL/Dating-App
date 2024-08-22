@@ -36,13 +36,15 @@ const UserSchema = new mongoose.Schema({
   images: [{ type: String }], // store the URLs or file paths of user's images
   description: { type: String, default: "" }, // user description
   likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // store the IDs of users the current user liked
+  gender: { type: Number, required: true },
 });
 
 const User = mongoose.model("user", UserSchema);
 
 // Register route
 app.post("/register", async (req, res) => {
-  const { username, password, profilePicture, images, description } = req.body;
+  const { username, password, profilePicture, images, description, gender } =
+    req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = new User({
@@ -51,6 +53,7 @@ app.post("/register", async (req, res) => {
     profilePicture,
     images,
     description,
+    gender,
   });
   await user.save();
 
@@ -76,6 +79,17 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error logging in");
     console.error(error);
+  }
+});
+
+app.get("/users", async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const users = await User.find({}, "-password"); // Exclude the password field
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Error fetching users");
   }
 });
 
