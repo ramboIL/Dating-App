@@ -19,7 +19,14 @@
       {{ user.description }}
     </h5>
   </div>
-  <div class="actions">
-    <button mat-button (onclick)="clickLike()">LIKE</button>
+  <div class="actions" *ngIf="!isMatchesPage">
+    <p>
+      <button title="Love it" class="btn" data-count="0" (click)="clickLike()">
+        <div>
+          <span>&#x2764;</span>
+          <span *ngIf="user.isLiked">Liked</span>
+        </div>
+      </button>
+    </p>
   </div>
 </div>

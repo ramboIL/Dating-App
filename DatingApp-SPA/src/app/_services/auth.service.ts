@@ -41,6 +41,7 @@ export interface IUser {
   description: string;
   likedUsers?: string[];
   gender: Gender;
+  isLiked?: boolean;
 }
 
 export enum Gender {
