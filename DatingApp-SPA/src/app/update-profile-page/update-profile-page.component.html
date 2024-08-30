@@ -1,0 +1,32 @@
+<form class="form" #updateUserForm="ngForm" (ngSubmit)="saveUserProfile()">
+  <h2 class="text-center text-primary">Profile</h2>
+  <hr />
+
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      required
+      name="username"
+      [(ngModel)]="updatedUser.newUsername"
+      placeholder="Username"
+    />
+  </div>
+
+  <div class="form-group">
+    <textarea
+      class="form-control"
+      maxlength="100"
+      name="description"
+      [(ngModel)]="updatedUser.description"
+      placeholder="Description"
+    ></textarea>
+  </div>
+
+  <div class="form-group text-center" *ngIf="!isUpdated">
+    <button class="btn btn-success mr-2" type="submit">Update</button>
+  </div>
+  <div class="form-group text-center" *ngIf="isUpdated">
+    <h3 color="">Update Success</h3>
+  </div>
+</form>

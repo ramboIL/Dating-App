@@ -2,30 +2,41 @@
   <a class="navbar-brand" href="#">Dating App</a>
 
   <ul class="navbar-nav mr-auto">
-    <li class="nav-item active">
-      <a class="nav-link" href="#">Matches </a>
+    <li class="nav-item" [class.active]="currentUrl === '/matches'">
+      <a class="nav-link" href="/matches">Matches </a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/list">Lists</a>
+    <li class="nav-item" [class.active]="currentUrl === '/list'">
+      <a class="nav-link" href="/list">List</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">Massages</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" (click)="logOut()" href="#">Logout</a>
+    <li class="nav-item" [class.active]="currentUrl === '/messages'">
+      <a class="nav-link" href="/messages">Massages</a>
     </li>
   </ul>
 
-  <div *ngIf="loggedIn()" class="dropdown">
-    <a class="dropdown-toggle text-light"> Welcome! </a>
+  <div *ngIf="loggedIn()" class="dropdown" dropdown>
+    <a class="dropdown-toggle text-light" dropdownToggle>
+      Welcome! <span class="caret"></span>
+    </a>
 
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#"
-        ><i class="fa fa-user"></i> Edit Profile</a
-      >
-      <div class="dropdown-divider"></div>
-      <a class="dropdown-item" href="#"><i class="fa fa-sign-out"></i>Logout</a>
-    </div>
+    <ul
+      id="dropdown-basic"
+      *dropdownMenu
+      class="dropdown-menu"
+      role="menu"
+      aria-labelledby="button-basic"
+    >
+      <li role="menuitem">
+        <a class="dropdown-item" routerLink="/profile">
+          <i class="fa fa-user"></i> Profile
+        </a>
+      </li>
+      <li class="divider dropdown-divider"></li>
+      <li role="menuitem">
+        <a class="dropdown-item" (click)="logOut()">
+          <i class="fa fa-sign-out"></i> Logout
+        </a>
+      </li>
+    </ul>
   </div>
 
   <form

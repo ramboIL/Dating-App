@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -36,11 +36,10 @@ export class AuthService {
 export interface IUser {
   username: string;
   password: string;
-  profilePicture?: string;
-  images?: string[];
   description: string;
   likedUsers?: string[];
   gender: Gender;
+  isLiked?: boolean;
 }
 
 export enum Gender {

@@ -17,9 +17,11 @@ export class UsersListComponent implements OnInit {
   }
 
   async getUsersList() {
-    (await this.usersSvc.getUsers()).subscribe(
+    const currentUsername = this.usersSvc.getAuthUserName();
+
+    (await this.usersSvc.getUsers(currentUsername)).subscribe(
       (res) => {
-        this.users = res;
+        this.users = res; // Res will now include an `isLiked` field for each user
       },
       (error) => {
         console.log(error);

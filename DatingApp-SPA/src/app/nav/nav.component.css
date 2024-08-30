@@ -1,0 +1,8 @@
+.dropdown-toggle,
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown {
+  margin-right: 85px;
+}
