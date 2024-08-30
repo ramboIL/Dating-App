@@ -160,7 +160,7 @@ app.get("/user/profile/:username", async (req, res) => {
 app.put("/user/profile/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const { newUsername, description } = req.body;
+    const { description } = req.body;
 
     // Find the user by the current username
     const user = await User.findOne({ username });
@@ -170,7 +170,6 @@ app.put("/user/profile/:username", async (req, res) => {
     }
 
     // Update the username and description
-    user.username = newUsername || user.username; // Update only if newUsername is provided
     user.description = description || user.description; // Update only if description is provided
 
     await user.save();
@@ -178,7 +177,6 @@ app.put("/user/profile/:username", async (req, res) => {
     res.status(200).json({
       message: "User profile updated successfully",
       user: {
-        username: user.username,
         description: user.description,
       },
     });

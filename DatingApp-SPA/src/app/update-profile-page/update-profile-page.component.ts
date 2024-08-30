@@ -9,7 +9,6 @@ import { IUser } from '../_services/auth.service';
 })
 export class UpdateProfilePageComponent implements OnInit {
   updatedUser: IUpdateUser = {
-    newUsername: '',
     description: '',
   };
 
@@ -30,7 +29,6 @@ export class UpdateProfilePageComponent implements OnInit {
       const authUsername = this.authUserName; // Assume you have this method
       const userProfile = await this.usersSvc.getUserProfile(authUsername);
 
-      this.updatedUser.newUsername = userProfile.newUsername;
       this.updatedUser.description = userProfile.description;
     } catch (error) {
       console.error('Error loading user profile', error);
@@ -53,6 +51,5 @@ export class UpdateProfilePageComponent implements OnInit {
 }
 
 export interface IUpdateUser {
-  newUsername: string;
   description: string;
 }
