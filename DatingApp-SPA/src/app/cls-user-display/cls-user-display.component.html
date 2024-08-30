@@ -19,8 +19,8 @@
       {{ user.description }}
     </h5>
   </div>
-  <div class="actions" *ngIf="!isMatchesPage">
-    <p>
+  <div class="actions">
+    <p *ngIf="!isMatchesPage">
       <button title="Love it" class="btn" data-count="0" (click)="clickLike()">
         <div>
           <span>&#x2764;</span>
@@ -28,5 +28,14 @@
         </div>
       </button>
     </p>
+    <div class="message-container" *ngIf="isMatchesPage">
+      <input
+        type="text"
+        [(ngModel)]="Message.content"
+        placeholder="Type your message"
+        maxlength="100"
+      />
+      <button (click)="sendMessage()">Send</button>
+    </div>
   </div>
 </div>

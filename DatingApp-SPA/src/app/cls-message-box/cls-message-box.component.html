@@ -1,0 +1,41 @@
+<div class="message-container">
+  <div>
+    <p class="header">
+      <strong
+        >{{
+          message.sender.username == authUserName
+            ? "You"
+            : message.sender.username
+        }}
+        to
+        {{
+          message.receiver.username == authUserName
+            ? "You"
+            : message.receiver.username
+        }}</strong
+      >
+      <button class="icon" (click)="deleteMessage(message)">X</button>
+    </p>
+    <p>{{ message.content }}</p>
+    <small>{{ message.timestamp | date : "dd/MM/yyyy" }}</small>
+  </div>
+  <div class="send-message">
+    <input
+      type="text"
+      [(ngModel)]="Message.content"
+      placeholder="Type your message"
+      maxlength="100"
+    />
+    <button
+      (click)="
+        sendMessage(
+          message.receiver.username == authUserName
+            ? message.sender.username
+            : message.receiver.username
+        )
+      "
+    >
+      Send
+    </button>
+  </div>
+</div>

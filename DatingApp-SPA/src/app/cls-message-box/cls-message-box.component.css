@@ -1,0 +1,48 @@
+.message-container {
+  background-color: aliceblue;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+  div {
+    width: 100%;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    .icon {
+      outline: none;
+      border: none;
+      background-color: transparent;
+    }
+  }
+
+  .send-message {
+    background-color: white;
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    input {
+      border: none;
+      width: 100%;
+      margin-right: 15px;
+    }
+    input:focus-visible {
+      outline: none !important;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+    }
+    button:focus {
+      outline: none !important;
+    }
+  }
+}

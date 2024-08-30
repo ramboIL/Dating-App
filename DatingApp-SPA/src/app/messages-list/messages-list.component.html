@@ -1,0 +1,8 @@
+<div *ngFor="let messageGroup of messages; let i = index">
+  <div class="page-wrap" *ngFor="let message of messageGroup">
+    <cls-message-box
+      [message]="message"
+      (deleted)="removeFromList(message)"
+    ></cls-message-box>
+  </div>
+</div>

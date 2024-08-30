@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Gender, IUser } from '../_services/auth.service';
-import { UsersService } from '../_services/users.service';
+import { IMessage, UsersService } from '../_services/users.service';
 
 @Component({
   selector: 'app-cls-user-display',
@@ -18,17 +18,19 @@ export class ClsUserDisplayComponent implements OnInit {
   @Input() user: IUser;
   @Input() isMatchesPage: boolean = false;
 
+  Message: IMessage = {
+    content: '',
+  };
+
   _isLiked: boolean = false;
 
   get userImages() {
-    if (this.user.images.length > 0) return this.user.images;
     return this.user.gender === Gender.Male
       ? this.maleDefaultImg
       : this.femaleDefaultImg;
   }
 
   get userProfileImage() {
-    if (this.user.profilePicture) return this.user.profilePicture;
     return this.user.gender === Gender.Male
       ? this.maleDefaultProfile
       : this.femaleDefaultProfile;
@@ -57,7 +59,28 @@ export class ClsUserDisplayComponent implements OnInit {
         console.error('Error liking user');
       }
     );
-
     return;
+  }
+
+  async sendMessage() {
+    if (!this.Message.content) {
+      return;
+    }
+    const senderUsername = this.usersSvc.getAuthUserName();
+    (
+      await this.usersSvc.sendMessage(
+        senderUsername,
+        this.user.username,
+        this.Message.content
+      )
+    ).subscribe(
+      (response) => {
+        this.Message.content = '';
+        console.log('Message sent successfully', response);
+      },
+      (error) => {
+        console.log('Error sending message', error);
+      }
+    );
   }
 }

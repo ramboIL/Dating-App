@@ -43,3 +43,27 @@
     }
   }
 }
+
+.message-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+
+  input {
+    border: none;
+    width: 100%;
+    margin-right: 15px;
+  }
+  input:focus-visible {
+    outline: none !important;
+  }
+  button {
+    border: none;
+    border-radius: 10px;
+  }
+  button:focus {
+    outline: none !important;
+  }
+}

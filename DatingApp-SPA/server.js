@@ -32,8 +32,6 @@ mongoose.connect(process.env.MONGO_URI, {
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profilePicture: { type: String, default: "" },
-  images: [{ type: String }],
   description: { type: String, default: "" },
   likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   gender: { type: Number, required: true },
@@ -41,11 +39,24 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
+// Message model
+const MessageSchema = new mongoose.Schema({
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  receiver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  content: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+});
+
+const Message = mongoose.model("Message", MessageSchema);
+
 // Register route
 app.post("/register", async (req, res) => {
   try {
-    const { username, password, profilePicture, images, description, gender } =
-      req.body;
+    const { username, password, description, gender } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const checkUsername = await User.findOne({ username });
@@ -56,8 +67,6 @@ app.post("/register", async (req, res) => {
     const user = new User({
       username,
       password: hashedPassword,
-      profilePicture,
-      images,
       description,
       gender,
     });
@@ -121,6 +130,61 @@ app.get("/users/:username", async (req, res) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).send("Error fetching users");
+  }
+});
+
+// Route the profile of the user
+app.get("/user/profile/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find the user by their username
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Send only the username and description back to the client
+    res.status(200).json({
+      newUsername: user.username,
+      description: user.description,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Failed to fetch user profile" });
+  }
+});
+
+// Route update user detail
+app.put("/user/profile/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { newUsername, description } = req.body;
+
+    // Find the user by the current username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the username and description
+    user.username = newUsername || user.username; // Update only if newUsername is provided
+    user.description = description || user.description; // Update only if description is provided
+
+    await user.save();
+
+    res.status(200).json({
+      message: "User profile updated successfully",
+      user: {
+        username: user.username,
+        description: user.description,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ error: "Failed to update user profile" });
   }
 });
 
@@ -201,6 +265,123 @@ app.get("/matches/:username", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// Route to send a message
+app.post("/message", async (req, res) => {
+  try {
+    const { senderUsername, receiverUsername, content } = req.body;
 
-//user: bittonassaf pass: dbtZbH3bm5mVqUOfV0
+    // Find sender and receiver users
+    const sender = await User.findOne({ username: senderUsername });
+    const receiver = await User.findOne({ username: receiverUsername });
+
+    if (!sender || !receiver) {
+      return res.status(404).json({ error: "Sender or receiver not found" });
+    }
+
+    // Create a new message
+    const message = new Message({
+      sender: sender._id,
+      receiver: receiver._id,
+      content,
+    });
+
+    await message.save();
+
+    res.status(201).json({ message: "Message sent successfully" });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).send("Error sending message");
+  }
+});
+
+// Route to get all messages for a user including both sent and received messages
+app.get("/messages/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch all messages where the user is either the sender or the receiver
+    const messages = await Message.find({
+      $or: [{ sender: user._id }, { receiver: user._id }],
+    })
+      .populate("sender", "username description gender")
+      .populate("receiver", "username description gender")
+      .sort({ timestamp: 1 });
+
+    // Group messages by conversation (unique pair of sender and receiver)
+    const conversations = messages.reduce((acc, msg) => {
+      const otherUser = msg.sender._id.equals(user._id)
+        ? msg.receiver
+        : msg.sender;
+      const conversationKey = otherUser._id.toString();
+
+      if (!acc[conversationKey]) {
+        acc[conversationKey] = [];
+      }
+
+      acc[conversationKey].push({
+        sender: {
+          username: msg.sender.username,
+          description: msg.sender.description,
+          gender: msg.sender.gender,
+        },
+        receiver: {
+          username: msg.receiver.username,
+          description: msg.receiver.description,
+          gender: msg.receiver.gender,
+        },
+        content: msg.content,
+        timestamp: msg.timestamp,
+      });
+
+      return acc;
+    }, {});
+
+    // Convert conversations object to array
+    const conversationsArray = Object.values(conversations);
+
+    res.status(200).json(conversationsArray);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Error fetching messages" });
+  }
+});
+
+app.post("/messages/delete", async (req, res) => {
+  try {
+    const { senderUsername, receiverUsername, content, timestamp } = req.body;
+
+    // Find the sender and receiver by username
+    const sender = await User.findOne({ username: senderUsername });
+    const receiver = await User.findOne({ username: receiverUsername });
+
+    if (!sender || !receiver) {
+      return res.status(404).json({ error: "Sender or receiver not found" });
+    }
+
+    // Find and delete the message
+    const deletedMessage = await Message.findOneAndDelete({
+      sender: sender._id,
+      receiver: receiver._id,
+      content: content,
+      timestamp: timestamp,
+    });
+
+    if (!deletedMessage) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    res.status(500).send("Error deleting message");
+  }
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));

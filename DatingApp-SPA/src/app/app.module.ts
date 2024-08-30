@@ -14,6 +14,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MathcesUsersComponent } from './mathces-users/mathces-users.component';
+import { MessagesListComponent } from './messages-list/messages-list.component';
+import { ClsMessageBoxComponent } from './cls-message-box/cls-message-box.component';
+import { UpdateProfilePageComponent } from './update-profile-page/update-profile-page.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import { MathcesUsersComponent } from './mathces-users/mathces-users.component';
     ClsUserDisplayComponent,
     UsersListComponent,
     MathcesUsersComponent,
+    MessagesListComponent,
+    ClsMessageBoxComponent,
+    UpdateProfilePageComponent,
   ],
   imports: [
     BrowserModule,
